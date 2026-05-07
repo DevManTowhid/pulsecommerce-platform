@@ -1,0 +1,41 @@
+services:  # Define the services that make up your application
+  db:  # Define the database service
+    image: postgres:15-alpine # Use the official PostgreSQL image with Alpine Linux for a smaller footprint
+    container_name: pulse_db  # Name the container for easier reference
+    restart: always # Ensure the database container restarts automatically if it crashes
+    environment: # Set environment variables for PostgreSQL configuration
+      - POSTGRES_USER=admin # Set the PostgreSQL user to 'admin'
+      - POSTGRES_PASSWORD=password123 # Set the PostgreSQL password to 'password123'
+      - POSTGRES_DB=pulse_commerce # Set the PostgreSQL database name to 'pulse_commerce'
+    ports:
+      - "5432:5432" # Map the PostgreSQL port to the host machine for external access
+    volumes: # Persist the database data to a named volume to ensure data is not lost when the container is removed
+      - postgres_data:/var/lib/postgresql/data # Use the named volume 'postgres_data' to store PostgreSQL data at the specified path in the container, after : means the path in the container where the data will be stored
+
+  redis: # Define the Redis service
+    image: redis:7-alpine # Use the official Redis image with Alpine Linux for a smaller footprint
+    restart: always # Ensure the Redis container restarts automatically if it crashes
+    volumes:
+      - redis_data:/data # Persist Redis data to a named volume 'redis_data' at the specified path in the container           
+    container_name: pulse_cache   # Name the container for easier reference
+    ports:
+      - "6379:6379" # Map the Redis port to the host machine for external access
+
+  api:
+    build: ./backend
+    container_name: pulse_api
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://admin:password123@db:5432/pulse_commerce
+      - REDIS_URL=redis://redis:6379/0
+    depends_on: # Ensure that the API service starts after the database and Redis services are up and running
+      - db
+      - redis
+
+volumes:
+  postgres_data: # Define a named volume for PostgreSQL data persistence
+  redis_data: # Define a named volume for Redis data persistence
+  api_data: # Define a named volume for API data persistence (if needed)
