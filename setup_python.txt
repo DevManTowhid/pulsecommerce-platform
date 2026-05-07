@@ -1,0 +1,28 @@
+import os
+
+project_name = "pulsecommerce-platform"
+structure = [
+    "backend/src/__init__.py",
+    "backend/requirements.txt",
+    "backend/Dockerfile",
+    "docker-compose.yml",
+    ".gitignore",
+    "README.md",
+]
+
+for file_path in structure:
+    dir_name = os.path.dirname(file_path)
+    
+    # Fix: Only attempt to make directories if a directory path actually exists
+    if dir_name:
+        os.makedirs(dir_name, exist_ok=True)
+        
+    with open(file_path, "w") as f:
+        if "gitignore" in file_path:
+            f.write("__pycache__/\nnode_modules/\n.env\n")
+        elif "README" in file_path:
+            f.write(f"# {project_name.replace('-', ' ').title()}\n")
+        # Note: Just opening the file in "w" mode creates it, 
+        # so you don't actually need the `else: f.write("")` block!
+
+print(f"🚀 Project {project_name} initialized successfully!")

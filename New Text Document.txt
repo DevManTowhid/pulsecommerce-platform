@@ -1,0 +1,26 @@
+import os
+
+project_name = "pulsecommerce-platform"
+structure = [
+    f"{project_name}/backend/src/__init__.py",
+    f"{project_name}/backend/requirements.txt",
+    f"{project_name}/backend/Dockerfile",
+    f"{project_name}/frontend/src/App.js",
+    f"{project_name}/frontend/package.json",
+    f"{project_name}/frontend/Dockerfile",
+    f"{project_name}/docker-compose.yml",
+    f"{project_name}/.gitignore",
+    f"{project_name}/README.md",
+]
+
+for file_path in structure:
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    with open(file_path, "w") as f:
+        if "gitignore" in file_path:
+            f.write("__pycache__/\nnode_modules/\n.env\n")
+        elif "README" in file_path:
+            f.write(f"# {project_name.replace('-', ' ').title()}\n")
+        else:
+            f.write("") # Create empty file
+
+print(f"🚀 Project {project_name} initialized successfully!")
